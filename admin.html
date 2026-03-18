@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .admin-dashboard { padding: 20px; font-family: Arial, sans-serif; }
+    .admin-dashboard h1 { font-size: 2rem; margin-bottom: 1rem; }
+    .admin-cards { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .admin-cards .card { background: #f0f0f0; padding: 1rem; flex: 1; min-width: 200px; border-radius: 8px; }
+    .transactions-table { width: 100%; margin-top: 1rem; border-collapse: collapse; }
+    .transactions-table th, .transactions-table td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    .transactions-table th { background-color: #eee; }
+  </style>
+</head>
+<body>
+<div class="admin-dashboard">
+  <h1>Admin Dashboard</h1>
+
+  <div class="admin-cards">
+    <div class="card">
+      <h3>Total Users</h3>
+      <p>Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Total Transactions</h3>
+      <p>Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Monthly Income</h3>
+      <p>Loading...</p>
+    </div>
+    <div class="card">
+      <h3>Monthly Expenses</h3>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <h2>Recent Transactions</h2>
+  <table class="transactions-table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+<script>
+  window.onload = () => {
+    const role = localStorage.getItem("role");
+    if (role !== "admin") {
+      alert("Access denied: Admins only");
+      window.location.href = "signup.html";
+    }
+  };
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("You must be logged in to access this page.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    fetch("https://ai-finance-backend-secure.onrender.com/admin/data", {
+      headers: {
+        "Authorization": token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.is_admin) {
+        alert("Access denied. You are not authorized to view this page.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      document.querySelector(".card:nth-child(1) p").textContent = data.total_users || "0";
+      document.querySelector(".card:nth-child(2) p").textContent = data.total_transactions || "0";
+      document.querySelector(".card:nth-child(3) p").textContent = `₦${(data.monthly_income || 0).toLocaleString()}`;
+      document.querySelector(".card:nth-child(4) p").textContent = `₦${(data.monthly_expenses || 0).toLocaleString()}`;
+
+      const tbody = document.querySelector(".transactions-table tbody");
+      tbody.innerHTML = ""; // Clear placeholder
+
+      (data.recent_transactions || []).forEach(tx => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${tx.user || "N/A"}</td>
+          <td>${tx.date || "-"}</td>
+          <td>₦${(tx.amount || 0).toLocaleString()}</td>
+          <td>${tx.category || "-"}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      if (!data.recent_transactions || data.recent_transactions.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="4">No recent transactions found.</td>`;
+        tbody.appendChild(row);
+      }
+    })
+    .catch(err => {
+      console.error("Access error:", err);
+      alert("Session expired or server error. Please login again.");
+      window.location.href = "index.html";
+    });
+  });
+</script>
+</body>
+</html>

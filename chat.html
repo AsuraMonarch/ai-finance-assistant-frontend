@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Finance Assistant Chat</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      padding: 2rem;
+    }
+    .chat-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #chat-box {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      background: #fefefe;
+    }
+    #userMessage {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      background: #0070f3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005bb5;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h2>💬 AI Finance Assistant</h2>
+    <div id="chat-box"></div>
+    <input type="text" id="userMessage" placeholder="Ask me about your budget, savings, or expenses..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const API_URL = 'https://ai-finance-assistant-muwh.onrender.com'; // Update if needed
+    const token = localStorage.getItem("token");
+
+    async function sendMessage() {
+      const message = document.getElementById('userMessage').value;
+      const chatBox = document.getElementById('chat-box');
+
+      if (!message) return;
+
+      chatBox.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
+
+      const res = await fetch(`${API_URL}/chat`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+      chatBox.innerHTML += `<div><strong>Bot:</strong> ${data.response}</div>`;
+      document.getElementById('userMessage').value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+
+  <div id="quick-replies" class="quick-replies"></div>
+  <script src="main.js"></script>
+</body>
+
+</html>

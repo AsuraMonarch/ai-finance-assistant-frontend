@@ -1,0 +1,52 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+    <meta charset="UTF-8" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>Login - AI Finance Assistant</title> 
+    <style> * { margin: 0; padding: 0; box-sizing: border-box; } 
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: #f9f9f9; color: #333; line-height: 1.6; } 
+    .container { max-width: 400px; background: #fff; margin: 5rem auto; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } 
+    h2 { text-align: center; margin-bottom: 1.5rem; color: #081c4c; } 
+    input { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 5px; } 
+    button { width: 100%; padding: 0.75rem; background: #0070f3; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; } 
+    button:hover { background: #005bb5; } p.signup-link { text-align: center; margin-top: 1rem; } 
+    p.signup-link a { color: #0070f3; text-decoration: none; } 
+    </style> 
+    </head> 
+    <body> 
+      <div class="container"> 
+        <h2>Login to Your Account</h2>
+<form id="loginForm">
+  <input type="text" id="username" placeholder="Username" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button type="submit">Login</button>
+</form>
+
+<p class="signup-link">Don't have an account? <a href="index.html">Sign up here</a></p>
+</div> 
+<script> const API_URL = "https://ai-finance-backend-secure.onrender.com"; 
+document.getElementById("loginForm")
+.addEventListener("submit", async function(e) 
+{ e.preventDefault(); const username = document.getElementById("username").value.trim(); 
+const password = document.getElementById("password").value.trim(); 
+if (!username || !password) { alert("Please enter username and password."); 
+return; } 
+try { const res = await fetch(API_URL + "/login", { method: "POST", headers: 
+{ "Content-Type": "application/json" }, 
+body: JSON.stringify({ username, password }) }); 
+const data = await res.json();
+console.log("Server response:", data);
+
+if (!res.ok)
+{
+alert(data.message || data.error || "Login failed");
+return;
+} 
+localStorage.setItem("token", data.token); 
+window.location.href = "dashboard.html"; } 
+catch (err) { console.error(err); alert("Unable to connect to server."); } }); 
+</script> 
+</body> 
+</html>

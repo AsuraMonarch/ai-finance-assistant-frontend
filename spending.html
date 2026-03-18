@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Spending | AI Finance Assistant</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2rem;
+      background: #f4f7fb;
+    }
+    h2 {
+      color: #081c4c;
+      text-align: center;
+    }
+    .table-container {
+      max-width: 800px;
+      margin: auto;
+      margin-bottom: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #0070f3;
+      color: white;
+    }
+    canvas {
+      max-width: 800px;
+      margin: auto;
+      display: block;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <h2>Track Spending</h2>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Amount (₦)</th>
+        </tr>
+      </thead>
+      <tbody id="transactionTableBody"></tbody>
+    </table>
+  </div>
+
+  <canvas id="spendingChart" height="120"></canvas>
+
+  <script>
+    const API_URL = 'https://ai-finance-assistant-muwh.onrender.com';
+    const token = localStorage.getItem('token');
+
+    async function loadTransactions() {
+      try {
+        const res = await fetch(`${API_URL}/transactions`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        const tableBody = document.getElementById('transactionTableBody');
+        tableBody.innerHTML = "";
+
+        const categoryTotals = {};
+
+        data.forEach(txn => {
+          // Populate table
+          const row = `<tr>
+            <td>${txn.date}</td>
+            <td>${txn.category}</td>
+            <td>₦${txn.amount}</td>
+          </tr>`;
+          tableBody.innerHTML += row;
+
+          // Track spending by category
+          categoryTotals[txn.category] = (categoryTotals[txn.category] || 0) + txn.amount;
+        });
+
+        // Draw chart
+        const ctx = document.getElementById('spendingChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(categoryTotals),
+            datasets: [{
+              label: 'Total Spent (₦)',
+              data: Object.values(categoryTotals),
+              backgroundColor: '#0070f3'
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: '₦ Amount' }
+              }
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load transactions.");
+      }
+    }
+
+    loadTransactions();
+    function exportToCSV() {
+  const rows = [['Date', 'Category', 'Amount']];
+  document.querySelectorAll('#transactionTableBody tr').forEach(row => {
+    const cols = row.querySelectorAll('td');
+    const rowData = [
+      cols[0].innerText,
+      cols[1].innerText,
+      cols[2].innerText.replace('₦', '').trim()
+    ];
+    rows.push(rowData);
+  });
+
+  let csvContent = "data:text/csv;charset=utf-8," 
+    + rows.map(e => e.join(",")).join("\n");
+
+  const link = document.createElement("a");
+  link.setAttribute("href", encodeURI(csvContent));
+  link.setAttribute("download", "transactions.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}async function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Transaction Report", 14, 15);
+
+  const headers = [["Date", "Category", "Amount"]];
+  const data = [];
+
+  document.querySelectorAll('#transactionTableBody tr').forEach(row => {
+    const cols = row.querySelectorAll('td');
+    data.push([
+      cols[0].innerText,
+      cols[1].innerText,
+      cols[2].innerText
+    ]);
+  });
+
+  doc.autoTable({
+    startY: 25,
+    head: headers,
+    body: data,
+    styles: { halign: 'left' },
+  });
+
+  doc.save("transactions.pdf");
+}
+  </script>
+  <div style="text-align: center; margin-top: 2rem;">
+  <button onclick="exportToCSV()">Export to CSV</button>
+  <button onclick="exportToPDF()">Export to PDF</button>
+</div>
+</body>
+</html>

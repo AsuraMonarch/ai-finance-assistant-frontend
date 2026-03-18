@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detailed Reports | AI Finance Assistant</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fb;
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      color: #081c4c;
+    }
+    .chart-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    canvas {
+      width: 100% !important;
+      height: 400px !important;
+    }
+  </style>
+</head>
+<body>
+  <h2>Detailed Financial Reports</h2>
+
+  <div class="chart-container">
+    <h3>📅 Income & Expense Over Time</h3>
+    <canvas id="lineChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>📊 Spending by Category</h3>
+    <canvas id="pieChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>📈 Financial Growth (Dummy Data)</h3>
+    <canvas id="barChart"></canvas>
+  </div>
+
+  <script>
+    const API_URL = 'https://ai-finance-assistant-muwh.onrender.com'; // your backend
+    const token = localStorage.getItem("token");
+
+    async function fetchTransactions() {
+      const res = await fetch(`${API_URL}/transactions`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return await res.json();
+    }
+
+    function groupByCategory(data) {
+      const totals = {};
+      data.forEach(tx => {
+        totals[tx.category] = (totals[tx.category] || 0) + tx.amount;
+      });
+      return totals;
+    }
+
+    function groupByDate(data) {
+      const totals = {};
+      data.forEach(tx => {
+        totals[tx.date] = (totals[tx.date] || 0) + tx.amount;
+      });
+      return totals;
+    }
+
+    async function renderCharts() {
+      const data = await fetchTransactions();
+
+      // Line Chart (Amount by Date)
+      const daily = groupByDate(data);
+      new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+          labels: Object.keys(daily),
+          datasets: [{
+            label: 'Total ₦ Spent',
+            data: Object.values(daily),
+            borderColor: '#0070f3',
+            fill: false
+          }]
+        }
+      });
+
+      // Pie Chart (Amount by Category)
+      const byCategory = groupByCategory(data);
+      new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(byCategory),
+          datasets: [{
+            label: 'Spending',
+            data: Object.values(byCategory),
+            backgroundColor: ['#0070f3', '#00c9a7', '#ffc107', '#ff6f61']
+          }]
+        }
+      });
+
+      // Dummy Growth Chart (for now)
+      new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+          datasets: [{
+            label: 'Growth (₦)',
+            data: [20000, 25000, 23000, 30000, 34000, 39000],
+            backgroundColor: '#00c9a7'
+          }]
+        }
+      });
+    }
+
+    renderCharts();
+  </script>
+</body>
+</html>

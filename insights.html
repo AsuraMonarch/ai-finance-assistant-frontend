@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Insights | Finance Assistant</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      text-align: center;
+      color: #081c4c;
+      margin-bottom: 1rem;
+    }
+    canvas {
+      margin: 2rem 0;
+    }
+    .section h3 {
+      color: #0070f3;
+    }
+    .prediction {
+      background: #e8f1ff;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>AI-Powered Financial Insights</h2>
+
+    <div class="section">
+      <h3>📊 Spending Over Time</h3>
+      <canvas id="spendingChart" height="100"></canvas>
+    </div>
+
+    <div class="section">
+      <h3>💡 Budget Prediction</h3>
+      <div id="predictionText" class="prediction">Loading prediction...</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://ai-finance-backend-1.onrender.com"; // Update if needed
+    const token = localStorage.getItem("token"); // or from login flow
+
+    async function fetchTransactions() {
+      const res = await fetch(`${API_URL}/transactions`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return await res.json();
+    }
+
+    async function fetchPrediction() {
+      const res = await fetch(`${API_URL}/predict`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return await res.json();
+    }
+
+    function renderSpendingChart(data) {
+      const totalsByDate = {};
+      data.forEach(txn => {
+        totalsByDate[txn.date] = (totalsByDate[txn.date] || 0) + txn.amount;
+      });
+
+      const labels = Object.keys(totalsByDate).sort();
+      const amounts = labels.map(date => totalsByDate[date]);
+
+      const ctx = document.getElementById('spendingChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Amount Spent (₦)',
+            data: amounts,
+            borderColor: '#0070f3',
+            backgroundColor: 'rgba(0,112,243,0.1)',
+            tension: 0.3,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { title: { display: true, text: 'Date' }},
+            y: { title: { display: true, text: '₦ Amount' }}
+          }
+        }
+      });
+    }
+
+    async function init() {
+      try {
+        const [transactions, prediction] = await Promise.all([
+          fetchTransactions(),
+          fetchPrediction()
+        ]);
+
+        renderSpendingChart(transactions);
+
+        document.getElementById("predictionText").textContent = prediction.prediction || "No prediction available.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById("predictionText").textContent = "Failed to load data.";
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

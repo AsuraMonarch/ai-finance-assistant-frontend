@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-powered personal finance assistant for budget tracking, expense management, and financial insights" />
+  <meta name="keywords" content="finance, budget, AI assistant, expense tracking, financial planning" />
+  <meta name="author" content="AI Finance Assistant" />
+  <title>AI Finance Assistant - Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background: #f9f9f9;
+      color: #333;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #081c4c;
+      color: #fff;
+      padding: 1rem 2rem;
+    }
+    .navbar .logo {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .navbar .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .navbar .nav-links a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .navbar .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to right, #081c4c, #0b2a72);
+      color: #fff;
+      padding: 3rem 2rem;
+    }
+    .hero-text {
+      flex: 1 1 45%;
+    }
+    .hero-text h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .hero-text p {
+      margin-bottom: 2rem;
+    }
+    .buttons .btn {
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      margin-right: 1rem;
+      transition: background 0.3s;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn.primary {
+      background: #0070f3;
+      color: #fff;
+    }
+    .btn.primary:hover {
+      background: #005bb5;
+    }
+
+    .hero-image {
+      flex: 1 1 45%;
+      text-align: center;
+    }
+    .hero-image img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+ .features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch; /* This line is key */
+  gap: 2rem;
+}
+    .feature-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  flex: 1 1 300px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 250px;
+}
+    .feature-card .icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      margin-bottom: 1rem;
+    }
+    .feature-card p {
+      color: #555;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+
+    .contact {
+      background: #fff;
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .contact h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .contact p {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #555;
+    }
+    .contact form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .contact input, .contact textarea {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+    }
+    .contact button {
+      padding: 0.75rem;
+      background: #0070f3;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .contact button:hover {
+      background: #005bb5;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-text, .hero-image {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">AI Finance Assistant</div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+      <a href="admin.html" id="adminLink" style="display:none;">Admin Dashboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Manage Your Finances with AI-Powered Insights!</h1>
+        <p>Take control of your personal finance management with the help of advanced artificial intelligence.
+          Our assistant helps you track expenses, set budgets, and provides smart recommendations tailored to your lifestyle. 
+        </p>
+        <p>
+    Whether you want to save more, understand your spending habits, or plan for future goals,
+    we give you clear and actionable insights to make informed financial decisions. 
+    Let AI work for your wallet!
+  </p>
+       <!--
+<div class="buttons">
+  <a href="signup.html" class="btn primary">Get Started</a>
+  <a href="login.html" class="btn primary" style="background: #fff; color: #0070f3; border: 1px solid #0070f3;">Login</a>
+</div>
+-->
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1579532537598-3c90a1f32fed?auto=format&fit=crop&w=800&q=80" alt="AI Finance Assistant Dashboard" />
+      </div>
+    </section>
+
+    <section class="features">
+      <a href="insights.html" style="text-decoration: none; color: inherit;">
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80" alt="AI Insights" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+    <div class="icon">💬</div>
+    <h3>AI Insights</h3>
+    <p>Get real-time financial predictions and budgeting help with our smart engine.</p>
+  </div>
+</a>
+      <a href="spending.html" style="text-decoration: none; color: inherit;">
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1579532537598-3c90a1f32fed?auto=format&fit=crop&w=400&q=80" alt="Track Spending" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+    <div class="icon">💼</div>
+    <h3>Track Spending</h3>
+    <p>Monitor your expenses and understand your financial habits easily.</p>
+  </div>
+</a>
+      <a href="reports.html" style="text-decoration: none; color: inherit;">
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=80" alt="Detailed Reports" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+    <div class="icon">📊</div>
+    <h3>Detailed Reports</h3>
+    <p>Visualize your income, expenses, and growth through clear reports.</p>
+  </div>
+</a>
+<a href="budget.html" style="text-decoration: none; color: inherit;">
+  <div class="feature-card" id="budgetCard">
+    <img src="https://images.unsplash.com/photo-1526628653108-d0aae06b0b01?auto=format&fit=crop&w=400&q=80" alt="Budget Summary" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+    <div class="icon">💰</div>
+    <h3>Budget Summary</h3>
+    <p>You have spent: <strong id="spentAmount">₦0</strong></p>
+<p>You can still spend: <strong id="remainingAmount">₦0</strong></p>
+  </div>
+</a>
+<a href="chat.html" style="text-decoration: none; color: inherit;">
+  <div class="feature-card">
+    <img src="https://images.unsplash.com/photo-1677442d019cecf8e5d04db7bccdf3fca6b4a131?auto=format&fit=crop&w=400&q=80" alt="Chat with AI" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+    <div class="icon">🤖</div>
+    <h3>Chat with AI</h3>
+    <p>Ask your finance assistant for personalized budgeting advice and insights.</p>
+  </div>
+</a>
+    </section>
+
+    <section id="contact" class="contact">
+      <h2>Contact Us</h2>
+      <p>Have a question or need support? Send us a message.</p>
+      <form>
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+    </section>
+  </main>
+  <section id="loginForm" style="display: none; padding: 2rem; background: #fff; max-width: 400px; margin: 2rem auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <h2 style="text-align: center;">Login</h2>
+  <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 0.5rem; margin: 1rem 0;">
+  <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 0.5rem; margin: 1rem 0;">
+  <button onclick="handleLogin()" style="width: 100%; padding: 0.75rem; background: #0070f3; color: white; border: none; border-radius: 5px;">Login</button>
+  <button onclick="document.getElementById('loginForm').style.display='none'" style="float:right; background:none; border:none; font-size:1.2rem; color:#999;"></button>
+</section>
+<script>
+if (!localStorage.getItem("token")) {
+  window.location.href = "login.html";
+}
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelector('.btn[href="#login"]').addEventListener("click", (e) => {
+      e.preventDefault(); // Prevent jump
+      document.getElementById("loginForm").style.display = "block";
+      window.scrollTo({ top: document.getElementById("loginForm").offsetTop, behavior: "smooth" });
+    });
+  });
+</script>
+<script>
+  const API_URL = 'https://ai-finance-backend-secure.onrender.com';
+  const WEEKLY_BUDGET = 47800; // Adjust as needed
+  const token = localStorage.getItem("token");
+
+  async function updateBudgetSummary() {
+    try {
+      const res = await fetch(`${API_URL}/transactions`, {
+headers: {
+"Authorization": "Bearer " + token
+}
+});
+      const transactions = await res.json();
+      // Filter this week’s transactions
+      const now = new Date();
+      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())); // Sunday
+      let totalSpent = 0;
+
+      transactions.forEach(tx => {
+        const txDate = new Date(tx.date);
+        if (txDate >= startOfWeek) {
+          totalSpent += tx.amount;
+        }
+      });
+
+      const remaining = WEEKLY_BUDGET - totalSpent;
+
+      document.getElementById("spentAmount").textContent = `₦${totalSpent.toLocaleString()}`;
+      document.getElementById("remainingAmount").textContent = `₦${remaining.toLocaleString()}`;
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      document.getElementById("spentAmount").textContent = "Error";
+      document.getElementById("remainingAmount").textContent = "Error";
+    }
+  }
+
+  // Run when page loads
+  document.addEventListener("DOMContentLoaded", updateBudgetSummary);
+</script>
+<script>
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+  }
+</script>
+</body>
+</html>

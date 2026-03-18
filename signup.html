@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - AI Finance Assistant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 400px;
+      background: #fff;
+      margin: 5rem auto;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #081c4c;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .password-strength {
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .strength-weak { color: #ff4444; }
+    .strength-medium { color: #ffaa00; }
+    .strength-strong { color: #44aa44; }
+
+    .error-message {
+      color: #ff4444;
+      font-size: 0.9rem;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #0070f3;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #0070f3;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #005bb5;
+    }
+
+    p.login-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    p.login-link a {
+      color: #0070f3;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Create Your Account</h2>
+    <form id="signupForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      <button type="submit">Sign Up</button>
+    </form>
+    <p class="login-link">Already have an account? <a href="login.html">Login here</a></p>
+  </div>
+
+  <script>
+    const API_URL = "https://ai-finance-backend-secure.onrender.com";
+
+    // Password strength checker
+    function checkPasswordStrength(password) {
+      let strength = 0;
+      let feedback = [];
+
+      if (password.length >= 8) strength++;
+      else feedback.push("at least 8 characters");
+
+      if (/[a-z]/.test(password)) strength++;
+      else feedback.push("lowercase letter");
+
+      if (/[A-Z]/.test(password)) strength++;
+      else feedback.push("uppercase letter");
+
+      if (/[0-9]/.test(password)) strength++;
+      else feedback.push("number");
+
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+      else feedback.push("special character");
+
+      const strengthText = strength < 2 ? "Weak" : strength < 4 ? "Medium" : "Strong";
+      const strengthClass = strength < 2 ? "strength-weak" : strength < 4 ? "strength-medium" : "strength-strong";
+
+      return { strength, text: strengthText, class: strengthClass, feedback };
+    }
+
+    // Real-time password strength validation
+    document.getElementById("password").addEventListener("input", function(e) {
+      const password = e.target.value;
+      const strengthDiv = document.getElementById("passwordStrength");
+
+      if (password.length === 0) {
+        strengthDiv.textContent = "";
+        return;
+      }
+
+      const result = checkPasswordStrength(password);
+      strengthDiv.textContent = `Password strength: ${result.text}`;
+      strengthDiv.className = `password-strength ${result.class}`;
+
+      if (result.feedback.length > 0) {
+        strengthDiv.textContent += ` - Missing: ${result.feedback.join(", ")}`;
+      }
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      // Clear previous errors
+      document.querySelectorAll(".error-message").forEach(el => el.style.display = "none");
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+      let hasError = false;
+
+      // Username validation
+      if (!username) {
+        document.getElementById("usernameError").textContent = "Username is required";
+        document.getElementById("usernameError").style.display = "block";
+        hasError = true;
+      } else if (username.length < 3 || username.length > 50) {
+        document.getElementById("usernameError").textContent = "Username must be 3-50 characters";
+        document.getElementById("usernameError").style.display = "block";
+        hasError = true;
+      } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        document.getElementById("usernameError").textContent = "Username can only contain letters, numbers, and underscores";
+        document.getElementById("usernameError").style.display = "block";
+        hasError = true;
+      }
+
+      // Email validation
+      if (!email) {
+        document.getElementById("emailError").textContent = "Email is required";
+        document.getElementById("emailError").style.display = "block";
+        hasError = true;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById("emailError").textContent = "Please enter a valid email address";
+        document.getElementById("emailError").style.display = "block";
+        hasError = true;
+      }
+
+      // Password validation
+      const passwordCheck = checkPasswordStrength(password);
+      if (!password) {
+        document.getElementById("passwordError").textContent = "Password is required";
+        document.getElementById("passwordError").style.display = "block";
+        hasError = true;
+      } else if (passwordCheck.strength < 3) {
+        document.getElementById("passwordError").textContent = "Password is too weak. Please include: " + passwordCheck.feedback.join(", ");
+        document.getElementById("passwordError").style.display = "block";
+        hasError = true;
+      }
+
+      // Confirm password validation
+      if (!confirmPassword) {
+        document.getElementById("confirmPasswordError").textContent = "Please confirm your password";
+        document.getElementById("confirmPasswordError").style.display = "block";
+        hasError = true;
+      } else if (password !== confirmPassword) {
+        document.getElementById("confirmPasswordError").textContent = "Passwords do not match";
+        document.getElementById("confirmPasswordError").style.display = "block";
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Show loading state
+      const signupBtn = document.getElementById("signupBtn");
+      signupBtn.disabled = true;
+      signupBtn.innerHTML = '<div class="loading"></div>Creating account...';
+
+      try {
+        const res = await fetch(API_URL + "/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 400) {
+            if (data.error.includes("username")) {
+              document.getElementById("usernameError").textContent = data.error;
+              document.getElementById("usernameError").style.display = "block";
+            } else if (data.error.includes("email")) {
+              document.getElementById("emailError").textContent = data.error;
+              document.getElementById("emailError").style.display = "block";
+            } else {
+              document.getElementById("passwordError").textContent = data.error;
+              document.getElementById("passwordError").style.display = "block";
+            }
+          } else {
+            alert(data.error || "Signup failed.");
+          }
+          return;
+        }
+
+        localStorage.setItem("token", data.token);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.error(err);
+        alert("Unable to connect to server.");
+      } finally {
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = "Sign Up";
+      }
+    });
+  </script>
+</body>
+</html>
