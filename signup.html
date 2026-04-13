@@ -111,8 +111,12 @@
     <h2>Create Your Account</h2>
     <form id="signupForm">
       <input type="text" id="username" placeholder="Username" required />
+      <div id="usernameError" class="error-message"></div>
       <input type="password" id="password" placeholder="Password" required />
+      <div id="passwordStrength" class="password-strength"></div>
+      <div id="passwordError" class="error-message"></div>
       <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      <div id="confirmPasswordError" class="error-message"></div>
       <button type="submit">Sign Up</button>
     </form>
     <p class="login-link">Already have an account? <a href="login.html">Login here</a></p>
@@ -173,7 +177,6 @@
       document.querySelectorAll(".error-message").forEach(el => el.style.display = "none");
 
       const username = document.getElementById("username").value.trim();
-      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
       const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
@@ -191,17 +194,6 @@
       } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
         document.getElementById("usernameError").textContent = "Username can only contain letters, numbers, and underscores";
         document.getElementById("usernameError").style.display = "block";
-        hasError = true;
-      }
-
-      // Email validation
-      if (!email) {
-        document.getElementById("emailError").textContent = "Email is required";
-        document.getElementById("emailError").style.display = "block";
-        hasError = true;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        document.getElementById("emailError").textContent = "Please enter a valid email address";
-        document.getElementById("emailError").style.display = "block";
         hasError = true;
       }
 
@@ -241,7 +233,7 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username, email, password })
+          body: JSON.stringify({ username, password })
         });
 
         const data = await res.json();
@@ -251,9 +243,6 @@
             if (data.error.includes("username")) {
               document.getElementById("usernameError").textContent = data.error;
               document.getElementById("usernameError").style.display = "block";
-            } else if (data.error.includes("email")) {
-              document.getElementById("emailError").textContent = data.error;
-              document.getElementById("emailError").style.display = "block";
             } else {
               document.getElementById("passwordError").textContent = data.error;
               document.getElementById("passwordError").style.display = "block";
@@ -265,6 +254,7 @@
         }
 
         localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
         window.location.href = "dashboard.html";
       } catch (err) {
         console.error(err);

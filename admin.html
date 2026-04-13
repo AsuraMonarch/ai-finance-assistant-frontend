@@ -16,7 +16,10 @@
 </head>
 <body>
 <div class="admin-dashboard">
-  <h1>Admin Dashboard</h1>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h1>Admin Dashboard</h1>
+    <button onclick="logout()" style="padding: 0.5rem 1rem; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Logout</button>
+  </div>
 
   <div class="admin-cards">
     <div class="card">
@@ -44,7 +47,7 @@
         <th>User</th>
         <th>Date</th>
         <th>Amount</th>
-        <th>Category</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
@@ -57,18 +60,14 @@
     const role = localStorage.getItem("role");
     if (role !== "admin") {
       alert("Access denied: Admins only");
-      window.location.href = "signup.html";
+      window.location.href = "login.html";
+      return;
     }
-  };
-</script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       alert("You must be logged in to access this page.");
-      window.location.href = "index.html";
+      window.location.href = "login.html";
       return;
     }
 
@@ -77,13 +76,20 @@
         "Authorization": "Bearer " + token
       }
     })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.is_admin) {
-        alert("Access denied. You are not authorized to view this page.");
-        window.location.href = "dashboard.html";
-        return;
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 403) {
+          alert("Access denied. You are not authorized to view this page.");
+          window.location.href = "dashboard.html";
+          return;
+        }
+        throw new Error(data.error || "Failed to load admin data");
       }
+      return data;
+    })
+    .then(data => {
+      if (!data) return;
 
       document.querySelector(".card:nth-child(1) p").textContent = data.total_users || "0";
       document.querySelector(".card:nth-child(2) p").textContent = data.total_transactions || "0";
@@ -91,7 +97,7 @@
       document.querySelector(".card:nth-child(4) p").textContent = `₦${(data.monthly_expenses || 0).toLocaleString()}`;
 
       const tbody = document.querySelector(".transactions-table tbody");
-      tbody.innerHTML = ""; // Clear placeholder
+      tbody.innerHTML = "";
 
       (data.recent_transactions || []).forEach(tx => {
         const row = document.createElement("tr");
@@ -99,7 +105,7 @@
           <td>${tx.user || "N/A"}</td>
           <td>${tx.date || "-"}</td>
           <td>₦${(tx.amount || 0).toLocaleString()}</td>
-          <td>${tx.category || "-"}</td>
+          <td>${tx.description || "-"}</td>
         `;
         tbody.appendChild(row);
       });
@@ -113,9 +119,16 @@
     .catch(err => {
       console.error("Access error:", err);
       alert("Session expired or server error. Please login again.");
-      window.location.href = "index.html";
+      window.location.href = "login.html";
     });
-  });
+  };
+</script>
+<script>
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    window.location.href = "login.html";
+  }
 </script>
 </body>
 </html>

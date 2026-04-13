@@ -335,8 +335,18 @@ headers: {
 <script>
   function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     window.location.href = "login.html";
   }
+</script>
+<script>
+  // Check admin role and show admin link
+  document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role");
+    if (role === "admin") {
+      document.getElementById("adminLink").style.display = "inline-block";
+    }
+  });
 </script>
 </body>
 </html>
