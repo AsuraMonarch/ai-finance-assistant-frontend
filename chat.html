@@ -76,7 +76,7 @@
       });
 
       const data = await res.json();
-      chatBox.innerHTML += `<div><strong>Bot:</strong> ${data.response}</div>`;
+      chatBox.innerHTML += `<div><strong>Bot:</strong> ${data.reply}</div>`;
       document.getElementById('userMessage').value = '';
       chatBox.scrollTop = chatBox.scrollHeight;
     }

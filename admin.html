@@ -74,7 +74,7 @@
 
     fetch("https://ai-finance-backend-secure.onrender.com/admin/data", {
       headers: {
-        "Authorization": token
+        "Authorization": "Bearer " + token
       }
     })
     .then(res => res.json())

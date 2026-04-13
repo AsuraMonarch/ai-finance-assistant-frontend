@@ -44,7 +44,8 @@ if (!res.ok)
 alert(data.message || data.error || "Login failed");
 return;
 } 
-localStorage.setItem("token", data.token); 
+localStorage.setItem("token", data.token);
+localStorage.setItem("role", username === "admin" ? "admin" : "user"); 
 window.location.href = "dashboard.html"; } 
 catch (err) { console.error(err); alert("Unable to connect to server."); } }); 
 </script> 
